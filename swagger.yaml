@@ -69,7 +69,7 @@ paths:
         204:
           description: 'Request successfull with no response content.' 
   /users({email})/transfer:
-    patch:
+    put:
       tags:
         - users
       summary: pay to a user
@@ -114,7 +114,7 @@ paths:
             - delivered
       responses:
         200:
-          description: the current amount of money
+          description: the list of orders according to the filter criteria
           schema:
             type: array
             items:

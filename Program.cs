@@ -12,12 +12,11 @@ namespace HerrOber2
         {
             DataModel.Instance.Load();
 
-            string baseUri = "http://localhost:4711";
-            //string baseUri = "http://herrober.rdeadmin.waters.com:4711";
+            string baseAddress = (args == null || args.Length == 0) ? "http://localhost:4711" : args[0];
 
             Console.WriteLine("Herr Ober is starting ...");
-            WebApp.Start<Startup>(baseUri);
-            Console.WriteLine("Herr Ober is listening at {0} ... ", baseUri);
+            WebApp.Start<Startup>(baseAddress);
+            Console.WriteLine("Herr Ober is listening at {0} ... ", baseAddress);
 
             Console.ReadLine();
         }

@@ -11,8 +11,8 @@ namespace HerrOber2
         static void Main(string[] args)
         {
             SetupData();
-            //string baseUri = "localhost:4711";
-            string baseUri = "http://herrober.rdeadmin.waters.com:4711";
+            string baseUri = "http://localhost:4711";
+            //string baseUri = "http://herrober.rdeadmin.waters.com:4711";
 
             Console.WriteLine("Herr Ober is starting ...");
             WebApp.Start<Startup>(baseUri);

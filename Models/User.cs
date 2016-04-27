@@ -39,6 +39,18 @@ namespace HerrOber2.Models
             }
 
             // TODO: Add bookings table to Balance ....
+            foreach(Booking booking in DataModel.Instance.Bookings)
+            {
+                if (booking.ActorEmail.Equals(EmailAddress))
+                {
+                    Balance += booking.Amount;
+                }
+                else if(booking.BookingType == BookingType.InternalTransfer
+                    && booking.Recipient.Equals(EmailAddress))
+                {
+                    Balance -= booking.Amount;
+                }
+            }
 
             return Balance;
         }

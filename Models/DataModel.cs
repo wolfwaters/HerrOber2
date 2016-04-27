@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,56 @@ namespace HerrOber2.Models
         private static DataModel instance;
 
         private DataModel()
+        {
+        }
+
+        public static DataModel Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new DataModel();
+
+                return instance;
+            }
+        }
+
+        public List<User> Users { get; set; }
+
+        public List<Restaurant> Restaurants { get; set; }
+
+        public List<Order> Orders { get; set; }
+
+        #region Read / Write
+
+        private string GetFileName()
+        {
+            string name = Assembly.GetExecutingAssembly().Location;
+            name = name.Replace(".exe", ".xml");
+            return name;
+        }
+
+        public void Load()
+        {
+            string fileName = GetFileName();
+            if (!File.Exists(fileName))
+            {
+                LoadDefaults();
+                return;
+            }
+
+            string xml = File.ReadAllText(fileName);
+            instance = Utils.FromXML<DataModel>(xml);
+        }
+
+        public void Save()
+        {
+            string fileName = GetFileName();
+            string xml = Utils.ToXml(this);
+            File.WriteAllText(fileName, xml);
+        }
+
+        private void LoadDefaults()
         {
             Users = new List<User>() {
                 new User("Carsten", "carsten.koblischke@waters.com"),
@@ -95,44 +146,6 @@ namespace HerrOber2.Models
                     UserEmail = "wolfgang.foerster@waters.com"
                 }
             };
-        }
-
-        public static DataModel Instance
-        {
-            get
-            {
-                if (instance == null)
-                    instance = new DataModel();
-
-                return instance;
-            }
-        }
-
-        public List<User> Users { get; set; }
-
-        public List<Restaurant> Restaurants { get; set; }
-
-        public List<Order> Orders { get; set; }
-
-        #region Read / Write
-
-        public bool ReadFromFile(string fileName)
-        {
-            xmlFileName = "";
-            if (!File.Exists(xmlFileName))
-                return false;
-
-            xmlFileName = fileName;
-            return true;
-        }
-        string xmlFileName;
-
-        public bool Save()
-        {
-            if (!File.Exists(xmlFileName))
-                return false;
-
-            return true;
         }
 
         #endregion Read / Write

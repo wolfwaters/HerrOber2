@@ -8,7 +8,6 @@ namespace HerrOber2
 {
     public class Startup
     {
-        //test
         // This method is required by Katana:
         public void Configuration(IAppBuilder app)
         {

@@ -64,12 +64,7 @@ namespace HerrOber2.Models
 
         private void LoadDefaults()
         {
-            Users = new List<User>() {
-                new User("Carsten", "carsten.koblischke@waters.com"),
-                new User("Martin", "martin.kruse@waters.com"),
-                new User("Ralf", "ralf.hoffmann@waters.com"),
-                new User("Wolfgang", "wolfgang.foerster@waters.com")
-            };
+            Users = new List<User>();
 
             Restaurants = new List<Restaurant>
             {

@@ -8,8 +8,9 @@ namespace HerrOber2.Controllers
 {
     public class UsersController : BaseController
     {
+        [HttpGet]
         [Route("users")]
-        public IHttpActionResult Get()
+        public IHttpActionResult GetUsers()
         {
             foreach (User user in DataModel.Instance.Users)
                 user.CalculateBalance();
@@ -17,8 +18,9 @@ namespace HerrOber2.Controllers
             return Ok(DataModel.Instance.Users);
         }
 
+        [HttpGet]
         [Route("users({emailAddress})")]
-        public IHttpActionResult Get(string emailAddress)
+        public IHttpActionResult GetUser(string emailAddress)
         {
             User user = DataModel.Instance.Users.FirstOrDefault(x => x.EmailAddress.Equals(emailAddress));
             if (user == null)

@@ -17,9 +17,6 @@ namespace HerrOber2.Models
         public string DishName { get; set; }
 
         public double Price { get; set; }
-        public string Extras { get; set; }
-
-        public double ExtrasPrice { get; set; }
 
         public OrderStatus OrderStatus { get; set; }
     }

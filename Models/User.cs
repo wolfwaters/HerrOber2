@@ -33,10 +33,11 @@ namespace HerrOber2.Models
                 {
                     if (order.OrderStatus == OrderStatus.Delivered)
                     {
-                        Balance += (order.Price + order.ExtrasPrice);
+                        Balance -= order.Price;
                     }
                 }
             }
+
             // TODO: Add bookings table to Balance ....
 
             return Balance;

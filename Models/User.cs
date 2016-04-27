@@ -27,6 +27,8 @@ namespace HerrOber2.Models
         internal double CalculateBalance()
         {
             Balance = 0.0;
+
+            // Subtract ordered items values
             foreach(Order order in DataModel.Instance.Orders)
             {
                 if(order.UserEmail.Equals(EmailAddress))
@@ -38,7 +40,7 @@ namespace HerrOber2.Models
                 }
             }
 
-            // TODO: Add bookings table to Balance ....
+            // Add bookings table to Balance ....
             foreach(Booking booking in DataModel.Instance.Bookings)
             {
                 if (booking.ActorEmail.Equals(EmailAddress))

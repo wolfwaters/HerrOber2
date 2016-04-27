@@ -1,0 +1,427 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: Herr Ober API
+  description: Api fuer Herr Ober
+  version: "1.0.0"
+# the domain of the service
+host: herrober.rdeadmin.waters.com
+# array of all schemes that your API supports
+schemes:
+  - https
+# will be prefixed to all paths
+basePath: /ober
+produces:
+  - application/json
+paths:
+  /users:
+    get:
+      summary: Users
+      description: Retrieve all users
+      tags:
+        - users
+      responses:
+        200:
+          description: An array of users
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/user'
+    put:
+      summary: add a user
+      tags:
+        - users
+      parameters:
+        - in: body
+          name: body
+          description: user to add
+          required: true
+          schema:
+            $ref: '#/definitions/user'
+      responses:
+        204:
+          description: 'Request successfull with no response content.'
+  /users({email}):
+    get:
+      summary: Users
+      description: Retrieve all users
+      tags:
+        - users
+      parameters:
+        - name: email
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of a user
+      responses:
+        200:
+          description: a single user
+          schema:
+            $ref: '#/definitions/user'
+    delete:
+      summary: delete a user
+      tags:
+        - users
+      parameters:
+        - $ref: '#/parameters/email'
+      responses:
+        204:
+          description: 'Request successfull with no response content.' 
+  /users({email})/transfer:
+    patch:
+      tags:
+        - users
+      summary: pay to a user
+      parameters:
+        - name: email
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of a user
+        - name: targetemail
+          in: query
+          required: true
+          type: string
+          description: email of the target user
+        - name: amount
+          in: query
+          required: true
+          type: number
+          description: amount that the current user pays to the target user
+      responses:
+        204:
+          description: 'Request successfull with no response content.'
+  /users({email})/orders:
+    get:
+      summary: Users
+      description: the orders for that user
+      tags:
+        - users
+      parameters:
+        - name: email
+          in: path
+          type: string
+          required: true
+          description: Unique identifier of a user
+        - name: orderstatus
+          in: query
+          type: string
+          description: whether the order is open on its way or already finished
+          enum:
+            - open
+            - ordered
+            - delivered
+      responses:
+        200:
+          description: the current amount of money
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/order'
+  /restaurants:
+    get:
+      summary: Get all restaurants
+      description: Retrieve all restaurants
+      tags:
+        - restaurants
+      responses:
+        200:
+          description: all restaurants
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/restaurant'
+    put:
+      summary: add or update a restaurant
+      tags:
+        - restaurants
+      parameters:
+        - in: body
+          name: body
+          description: restaurant to add or update
+          required: true
+          schema:
+            $ref: '#/definitions/restaurant'
+      responses:
+        204:
+          description: 'Request successfull with no response content.'
+  /restaurants({name}):
+    get:
+      summary: Get all restaurants
+      description: Retrieve all restaurants
+      tags:
+        - restaurants
+      parameters:
+        - $ref: '#/parameters/restaurantname'
+      responses:
+        200:
+          description: all restaurants
+          schema:
+            $ref: '#/definitions/restaurant'
+    delete:
+      summary: delete a restaurant
+      tags:
+        - restaurants
+      parameters:
+        - $ref: '#/parameters/restaurantname'
+      responses:
+        204:
+          description: 'Request successfull with no response content.'
+        404:
+          description: 'Not found'
+  /restaurants({name})/dishes:
+    get:
+      summary: Get all dishes for a restaurant that have already been entered
+      tags:
+        - dishes
+      parameters:
+        - $ref: '#/parameters/restaurantname'
+      responses:
+        200:
+          description: all dishes
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/dish'
+    put:
+      summary: update or add a dish
+      tags:
+        - dishes
+      parameters:
+        - $ref: '#/parameters/restaurantname'
+        - in: body
+          name: body
+          description: dish to add or update
+          required: true
+          schema:
+            $ref: '#/definitions/dish'
+      responses:
+        204:
+          description: 'Request successfull with no response content.'
+        404:
+          description: Restaurant not found
+  /restaurants({name})/dishes({dishName}):
+    delete:
+      summary: delete a dish
+      tags:
+        - dishes
+      parameters:
+        - $ref: '#/parameters/restaurantname'
+        - name: dishName
+          in: path
+          required: true
+          description: the unique id of the dish (for that current restaurant)
+          type: string
+      responses:
+        204:
+          description: 'Request successfull with no response content.'
+        404:
+          description: 'Not found either the restaurant or the dish with this name for this restaurant'
+  /orders:
+    get:
+      summary: orders
+      description: the orders
+      tags:
+        - orders
+      parameters:
+        - name: date
+          in: query
+          type: string
+          description: delivery date and time
+        - name: orderstatus
+          in: query
+          type: string
+          description: whether the order is open on its way or already finished
+          enum:
+            - open
+            - ordered
+            - delivered
+      responses:
+        200:
+          description: the current amount of money
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/order'
+    put:
+      tags:
+        - orders
+      summary: add or update an order
+      parameters:
+        - in: body
+          name: body
+          description: order to add or update
+          required: true
+          schema:
+            $ref: '#/definitions/order'
+      responses:
+        204:
+          description: 'Request successfull with no response content.'
+    delete:
+      tags:
+        - orders
+      summary: delete an order
+      parameters:
+        - name: userEmail
+          in: query
+          required: true
+          type: string
+          description: Unique identifier of a user
+        - name: plannedDateOfDelivery
+          in: query
+          required: true
+          type: string
+          description: delivery date and time
+        - name: restaurant
+          in: query
+          required: true
+          type: string
+          description: name of the restaurant
+        - name: dishName
+          in: query
+          required: true
+          type: string
+          description: name of the dish
+      responses:
+        204:
+          description: 'Ok, first matching order delete'
+        404:
+          description: 'Not found a matching order'
+        406:
+          description: 'incorrect parameters'
+        
+    patch:
+      tags:
+        - orders
+      summary: pay a delivery
+      parameters:
+        - name: user
+          in: query
+          required: true
+          type: string
+          description: Unique identifier of a user
+        - name: date
+          in: query
+          required: true
+          type: string
+          description: delivery date and time
+        - name: restaurant
+          in: query
+          required: true
+          type: string
+          description: name of the restaurant
+        - name: amount
+          in: query
+          type: number
+          description: amount that the current user has paid.
+      responses:
+        204:
+          description: 'Request successfull with no response content.'
+  /balancestatus:
+    get:
+      summary: Tells whether there are discrepancies
+      description: lists issues
+      responses:
+        200:
+          description: information about the current status of the system (balances o.k.)
+          schema:
+            type: string
+definitions:
+  user:
+    type: object
+    required:
+      - email
+      - name
+    properties:
+      email:
+        type: string
+        description: email address (serves as identifier)
+      name:
+        type: string
+        description: user name
+      imageurl:
+        type: string
+        description: Image URL representing the user
+      balance:
+        type: number
+        description: Current balance
+  restaurant:
+    type: object
+    properties:
+      name:
+        type: string
+        description: name
+      phone:
+        type: string
+        description: phone number
+      email:
+        type: string
+        description: email address
+      url:
+        type: string
+        description: url to the restaurant to see the menu
+  dish:
+    type: object
+    properties:
+      name:
+        type: string
+        description: name of the dish
+      price:
+        type: number
+        description: the last known price
+  order:
+    type: object
+    properties:
+      restaurant:
+        type: string
+        description: name
+      plannedDeliveryDate:
+        type: string
+        description: planned delivery date and time
+      email:
+        type: string
+        description: email address
+      plateId:
+        type: string
+        description: identifier of the dish
+      baseprice:
+        type: number
+        description: identifier of the dish
+      extras:
+        type: string
+        description: extras for the current product (e.g. for a Pizza)
+      extrasprice:
+        type: number
+        description: price for the extras
+      orderstatus:
+          type: string
+          description: whether the order is open on its way or already finished
+          enum:
+            - open
+            - ordered
+            - delivered
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
+parameters:
+  restaurantname:
+    name: name
+    in: path
+    required: true
+    type: string
+    description: name of the restaurant
+  email:
+    name: email
+    in: path
+    type: string
+    required: true
+    description: Unique identifier of a user
+  

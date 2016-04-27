@@ -1,3 +1,11 @@
+# VS2015 files and folders
+*.suo
+*.user
+.vs/
+bin/
+obj/
+packages/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

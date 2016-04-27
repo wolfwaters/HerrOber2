@@ -20,11 +20,6 @@ namespace HerrOber2
             Console.WriteLine("Herr Ober is listening at {0} ... ", baseUri);
 
             Console.ReadLine();
-            DataModel.Instance.Save();
-        }
-
-        private static void SetupData()
-        {
         }
     }
 }

@@ -33,6 +33,8 @@ namespace HerrOber2.Models
 
         public List<Order> Orders { get; set; }
 
+        public List<Booking> Bookings { get; set; }
+
         #region Read / Write
 
         private string GetFileName()

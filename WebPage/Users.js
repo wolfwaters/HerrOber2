@@ -1,23 +1,19 @@
-//--- initialize the Google table chart
-google.load('visualization', '1', { packages: ['table', 'corechart', 'line'] });
-
 $(document).ready(function () {
 
-    var usersTable = new usersTable('usersDiv');
+    var baseAddress = 'http://localhost:4711/';
 
-    usersTable.doit();
+    $.getJSON(baseAddress + 'users', function (users) {
+        for (i = 0; i < users.length; i++) {
+            //--- add indicators
+            $('<li data-target="#carousel-example-generic" data-slide-to="' + i + '"></li>').appendTo('.carousel-indicators')
 
-    //-----------------------------------------------------------
-    // usersTable
-    //-----------------------------------------------------------
-    function usersTable(divID) {
-        this.table = new google.visualization.Table(document.getElementById(divID));
-        
-        this.doit = function () {
-            var url = 'http://herrober.rdeadmin.waters.com:4711/users';
-            $.getJSON(url, function (data) {
-                console.log(data);
-            });            
+            //--- add items
+            var imageUrl = 'http://herrober.rdeadmin.waters.com/Unknown.jpg';
+            $('<div class="item"><img src="' + imageUrl + '"><div class="carousel-caption"><h3>' + users[i].DisplayName + '</h3><p>' + users[i].EmailAddress + '</p></div></div>').appendTo('.carousel-inner');
         }
-    }
+
+        $('.item').first().addClass('active');
+        $('.carousel-indicators > li').first().addClass('active');
+        $('#carousel-example-generic').carousel();
+    });
 });

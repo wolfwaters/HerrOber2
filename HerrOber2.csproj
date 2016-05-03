@@ -95,6 +95,8 @@
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="swagger.yaml" />
+    <None Include="WebPage\Index.html" />
+    <None Include="WebPage\Users.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

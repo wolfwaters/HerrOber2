@@ -3,6 +3,7 @@ using Newtonsoft.Json.Converters;
 using Owin;
 using System.Web.Http;
 using HerrOber2.Controllers;
+using System.Web.Http.Cors;
 
 namespace HerrOber2
 {
@@ -27,6 +28,10 @@ namespace HerrOber2
 
             //--- Add our global message handler
             config.MessageHandlers.Add(new GlobalMessageHandler());
+
+            //--- 
+            var cors = new EnableCorsAttribute("*", "*", "*");
+            config.EnableCors(cors);
 
             config.MapHttpAttributeRoutes();
             return config;

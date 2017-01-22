@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HerrOber2.Models
 {
@@ -50,6 +47,7 @@ namespace HerrOber2.Models
             if (!File.Exists(fileName))
             {
                 LoadDefaults();
+                Save();
                 return;
             }
 
@@ -66,7 +64,18 @@ namespace HerrOber2.Models
 
         private void LoadDefaults()
         {
-            Users = new List<User>();
+            Users = new List<User>
+            {
+                new User("Carsten", "carsten.koblischke@waters.com"),
+                new User("Martin", "martin.kruse@waters.com"),
+                new User("Ralf", "ralf.hoffmann@waters.com"),
+                new User("Jörg", "joerg.kessenich@waters.com"),
+                new User("Wolfgang", "wolfgang.foerster@waters.com"),
+                new User("Bettina", "bettina.hohn@waters.com"),
+                new User("Sylvia", "sylvia.mueller@waters.com"),
+                new User("Hans", "hans.mueller@waters.com"),
+                new User("Rolf", "rolf.grigat@waters.com"),
+            };
 
             Restaurants = new List<Restaurant>
             {
@@ -75,8 +84,11 @@ namespace HerrOber2.Models
                     Name = "Meyers",Url = "https://shop.meyer-menue.de", Phone = "0800 150 150 5",
                     Dishes = new List<Dish>
                     {
-                        new Dish { Name = "Menü 1", Price = 4.5},
-                        new Dish { Name = "Menü 2", Price = 5.0}
+                        new Dish { Name = "Menü 1", Price = 4.6},
+                        new Dish { Name = "Menü 2", Price = 4.6},
+                        new Dish { Name = "Menü 3", Price = 4.6},
+                        new Dish { Name = "Menü 4", Price = 5.1},
+                        new Dish { Name = "Menü 5", Price = 5.3}
                     }
                 },
                 new Restaurant
@@ -90,59 +102,71 @@ namespace HerrOber2.Models
             {
                 new Order
                 {
+                    Id = NewGuid(),
                     Restaurant = "Meyers",
                     DishName = "Menü 1",
                     Price = 4.3,
                     OrderStatus = OrderStatus.Open,
                     PlannedDeliveryDate = new DateTime(2016,05,04, 12,30,00).ToUniversalTime(),
-                    UserEmail = "ralf.hoffmann@waters.com"
+                    UserId = Users[0].Id
                 },
                 new Order
                 {
+                    Id = NewGuid(),
                     Restaurant = "Meyers",
                     DishName = "Menü 4",
                     Price = 5.3,
                     OrderStatus = OrderStatus.Open,
                     PlannedDeliveryDate = new DateTime(2016,05,03, 12,30,00).ToUniversalTime(),
-                    UserEmail = "martin.kruse@waters.com"
+                    UserId = Users[1].Id
                 },
                 new Order
                 {
+                    Id = NewGuid(),
                     Restaurant = "Meyers",
                     DishName = "Menü 1",
                     Price = 4.3,
                     OrderStatus = OrderStatus.Ordered,
                     PlannedDeliveryDate = new DateTime(2016,05,03, 12,30,00).ToUniversalTime(),
-                    UserEmail = "ralf.hoffmann@waters.com"
+                    UserId = Users[2].Id
                 },
                 new Order
                 {
+                    Id = NewGuid(),
                     Restaurant = "Meyers",
                     DishName = "Menü 5",
                     Price = 5.3,
                     OrderStatus = OrderStatus.Ordered,
                     PlannedDeliveryDate = new DateTime(2016,05,02, 12,30,00).ToUniversalTime(),
-                    UserEmail = "wolfgang.foerster@waters.com"
+                    UserId = Users[3].Id
                 },
                 new Order
                 {
+                    Id = NewGuid(),
                     Restaurant = "Meyers",
                     DishName = "Menü 1",
                     Price = 4.3,
                     OrderStatus = OrderStatus.Delivered,
                     PlannedDeliveryDate = new DateTime(2016,05,02, 12,30,00).ToUniversalTime(),
-                    UserEmail = "carsten.koblischke@waters.com"
+                    UserId = Users[4].Id
                 },
                 new Order
                 {
+                    Id = NewGuid(),
                     Restaurant = "Meyers",
                     DishName = "Menü 2",
                     Price = 5.3,
                     OrderStatus = OrderStatus.Delivered,
                     PlannedDeliveryDate = new DateTime(2016,05,02, 12,30,00).ToUniversalTime(),
-                    UserEmail = "wolfgang.foerster@waters.com"
+                    UserId = Users[5].Id
                 }
             };
+        }
+
+        public static string NewGuid()
+        {
+            Guid id = Guid.NewGuid();
+            return id.ToString("N").ToLower();
         }
 
         #endregion Read / Write

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using Newtonsoft.Json;
 
 namespace HerrOber2.Controllers
 {
@@ -18,33 +19,35 @@ namespace HerrOber2.Controllers
         {
             var queryParameters = HttpUtility.ParseQueryString(Request.RequestUri.Query);
             List<Order> orders = DataModel.Instance.Orders;
-
             IEnumerable<Order> result = orders;
 
             //Apply filters
-
-            string userEmail = queryParameters["userEmail"];
-
-            if (userEmail != null)
+            var userId = queryParameters["userId"];
+            if (userId != null)
             {
-                result = result.Where(x => x.UserEmail == userEmail);
+                result = result.Where(x => x.UserId == userId);
             }
 
-
             string orderStatus = queryParameters["orderStatus"];
-
             if (orderStatus != null)
             {
                 result = result.Where(x => x.OrderStatus == (OrderStatus)Enum.Parse(typeof(OrderStatus), orderStatus));
             }
 
             string plannedDeliveryDate = queryParameters["plannedDeliveryDate"];
-
-
             if (plannedDeliveryDate != null)
             {                
-                result = result.Where(x => x.PlannedDeliveryDate == Newtonsoft.Json.JsonConvert.DeserializeObject<DateTime>(plannedDeliveryDate));
-            } 
+                result = result.Where(x => x.PlannedDeliveryDate == JsonConvert.DeserializeObject<DateTime>(plannedDeliveryDate));
+            }
+
+            var plannedDeliveryWeek = queryParameters["plannedDeliveryWeek"];
+            if (plannedDeliveryWeek != null)
+            {
+                var date = DateTime.Parse(plannedDeliveryWeek);
+                var day1 = date - TimeSpan.FromDays(1);
+                var day2 = date + TimeSpan.FromDays(6);
+                result = result.Where(x => x.PlannedDeliveryDate > day1 && x.PlannedDeliveryDate < day2);
+            }
             return Ok(result);
         }
 
@@ -52,21 +55,23 @@ namespace HerrOber2.Controllers
         [Route("orders")]
         public IHttpActionResult Put([FromBody] Order order)
         {
-            List<Order> orders = DataModel.Instance.Orders;
-            Order existing = orders.FirstOrDefault(x =>
-                x.UserEmail == order.UserEmail
-                && x.DishName == order.DishName
-                && x.PlannedDeliveryDate == order.PlannedDeliveryDate
-                && x.Restaurant == order.Restaurant
-                );
-            if (existing != null)
+            User user = DataModel.Instance.Users.FirstOrDefault(x => x.Id.Equals(order.UserId));
+            if (user == null)
+                return NotFound();
+
+            var orders = DataModel.Instance.Orders;
+            if (string.IsNullOrWhiteSpace(order.Id))
             {
-                //Delete it
-                orders.Remove(existing);
+                order.Id = DataModel.NewGuid();
+            }
+            else
+            {
+                var existing = orders.FirstOrDefault(x => x.Id == order.Id);
+                if (existing != null)
+                    orders.Remove(existing);
             }
             orders.Add(order);
-
-            return OkNoContent();
+            return Ok(order.Id);
         }
 
 
@@ -74,22 +79,12 @@ namespace HerrOber2.Controllers
         [Route("orders")]
         public IHttpActionResult Delete()
         {             
-            List<Order> orders = DataModel.Instance.Orders;
-
-            //Apply filters
             var queryParameters = HttpUtility.ParseQueryString(Request.RequestUri.Query);
-            string userEmail = queryParameters["userEmail"];
-            string restaurant = queryParameters["restaurant"];
-            string plannedDeliveryDate = queryParameters["plannedDeliveryDate"];
-            string dishName = queryParameters["dishName"];
-            if (userEmail != null && restaurant != null && plannedDeliveryDate != null && dishName != null)
+            var orderId = queryParameters["orderId"];
+            if (orderId != null)
             {
-                Order orderToDelete = orders.FirstOrDefault(x => x.UserEmail == userEmail
-                    && x.Restaurant == restaurant
-                    && x.DishName == dishName
-                    && x.PlannedDeliveryDate == Newtonsoft.Json.JsonConvert.DeserializeObject<DateTime>(plannedDeliveryDate)
-                );
-
+                var orders = DataModel.Instance.Orders;
+                var orderToDelete = orders.FirstOrDefault(x => x.Id == orderId);
                 if (orderToDelete != null)
                 {
                     orders.Remove(orderToDelete);
@@ -101,10 +96,8 @@ namespace HerrOber2.Controllers
                 }              
             }
 
-
             return StatusCode(System.Net.HttpStatusCode.NotAcceptable);
         }
-
 
         #endregion
     }

@@ -1,5 +1,4 @@
-﻿
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace HerrOber2.Models
 {
@@ -9,15 +8,19 @@ namespace HerrOber2.Models
         {
         }
 
-        public User(string displayName, string emailAddress)
+        public User(string name, string email)
         {
-            DisplayName = displayName;
-            EmailAddress = emailAddress;
+            Id = DataModel.NewGuid();
+            Name = name;
+            Email = email;
+            ImageUrl = name + ".jpg";
         }
 
-        public string DisplayName { get; set; }
+        public string Id { get; set; }
 
-        public string EmailAddress { get; set; }
+        public string Name { get; set; }
+
+        public string Email { get; set; }
 
         public string ImageUrl { get; set; }
 
@@ -31,7 +34,7 @@ namespace HerrOber2.Models
             // Subtract ordered items values
             foreach(Order order in DataModel.Instance.Orders)
             {
-                if(order.UserEmail.Equals(EmailAddress))
+                if(order.UserId.Equals(Id))
                 {
                     if (order.OrderStatus == OrderStatus.Delivered)
                     {
@@ -43,12 +46,12 @@ namespace HerrOber2.Models
             // Add bookings table to Balance ....
             foreach(Booking booking in DataModel.Instance.Bookings)
             {
-                if (booking.ActorEmail.Equals(EmailAddress))
+                if (booking.ActorId.Equals(Id))
                 {
                     Balance += booking.Amount;
                 }
                 else if(booking.BookingType == BookingType.InternalTransfer
-                    && booking.Recipient.Equals(EmailAddress))
+                    && booking.Recipient.Equals(Id))
                 {
                     Balance -= booking.Amount;
                 }

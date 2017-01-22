@@ -20,10 +20,10 @@ namespace HerrOber2.Controllers
         }
 
         [HttpGet]
-        [Route("users({emailAddress})")]
-        public IHttpActionResult GetUser(string emailAddress)
+        [Route("users({userId})")]
+        public IHttpActionResult GetUser(string userId)
         {
-            User user = DataModel.Instance.Users.FirstOrDefault(x => x.EmailAddress.Equals(emailAddress));
+            User user = DataModel.Instance.Users.FirstOrDefault(x => x.Id.Equals(userId));
             if (user == null)
                 return NotFound();
             user.CalculateBalance();
@@ -31,16 +31,16 @@ namespace HerrOber2.Controllers
         }
 
         [HttpGet]
-        [Route("users({emailAddress})/orders")]
-        public IHttpActionResult GetUserOrders(string emailAddress)
+        [Route("users({userId})/orders")]
+        public IHttpActionResult GetUserOrders(string userId)
         {
-            User user = DataModel.Instance.Users.FirstOrDefault(x => x.EmailAddress.Equals(emailAddress));
+            User user = DataModel.Instance.Users.FirstOrDefault(x => x.Id.Equals(userId));
             if (user == null)
                 return NotFound();
 
             var queryParameters = HttpUtility.ParseQueryString(Request.RequestUri.Query);
 
-            IEnumerable<Order> result = DataModel.Instance.Orders.Where(x => x.UserEmail == emailAddress); 
+            IEnumerable<Order> result = DataModel.Instance.Orders.Where(x => x.UserId == userId); 
 
             //Apply filters
 
@@ -62,7 +62,7 @@ namespace HerrOber2.Controllers
                 return BadRequest("Invalid user information");
             try
             {
-                User existingUser = DataModel.Instance.Users.FirstOrDefault(x => x.EmailAddress.Equals(user.EmailAddress));
+                User existingUser = DataModel.Instance.Users.FirstOrDefault(x => x.Id.Equals(user.Id));
                 if (existingUser == null)
                     DataModel.Instance.Users.Add(user);
                 else
@@ -81,21 +81,20 @@ namespace HerrOber2.Controllers
         }
 
         [HttpPut]
-        [Route("users({emailAddress})/transfer")]
-        public IHttpActionResult PutTransfer(string emailAddress, [FromUri] string targetemail, [FromUri] double amount)
+        [Route("users({userId})/transfer")]
+        public IHttpActionResult PutTransfer(string userId, [FromUri] string targetId, [FromUri] double amount)
         {
-            // test: http://localhost:4711/users(martin.kruse@waters.com)/transfer?targetemail=martin.kruse@waters.com&amount=1.0
             try
             {
-                User user = DataModel.Instance.Users.FirstOrDefault(x => x.EmailAddress.Equals(emailAddress));
+                User user = DataModel.Instance.Users.FirstOrDefault(x => x.Id.Equals(userId));
                 if (user == null)
-                    return BadRequest("Den Zahler (" + emailAddress + ") kennen wir leider nicht");
+                    return BadRequest("Den Zahler (" + userId + ") kennen wir leider nicht");
 
-                User recipient = DataModel.Instance.Users.FirstOrDefault(x => x.EmailAddress.Equals(targetemail));
+                User recipient = DataModel.Instance.Users.FirstOrDefault(x => x.Id.Equals(targetId));
                 if (recipient == null)
-                    return BadRequest("Den Zahlungsempfänger (" + targetemail+ ") kennen wir leider nicht");
+                    return BadRequest("Den Zahlungsempfänger (" + targetId+ ") kennen wir leider nicht");
 
-                if (emailAddress.Equals(targetemail))
+                if (userId.Equals(targetId))
                 {
                     return BadRequest("Willst Du Dir wirklich selbst etwas bezahlen?");
                 }
@@ -107,8 +106,8 @@ namespace HerrOber2.Controllers
 
                 Booking transfer = new Booking()
                 {
-                    ActorEmail = emailAddress,
-                    Recipient = targetemail,
+                    ActorId = userId,
+                    Recipient = targetId,
                     BookingType = BookingType.InternalTransfer,
                     BookingDate = DateTime.UtcNow,
                     Amount = amount
@@ -125,17 +124,17 @@ namespace HerrOber2.Controllers
         }
 
         [HttpDelete]
-        [Route("users({emailAddress})")]
-        public IHttpActionResult Delete(string emailAddress)
+        [Route("users({userId})")]
+        public IHttpActionResult Delete(string userId)
         {
-            User user = DataModel.Instance.Users.FirstOrDefault(x => x.EmailAddress.Equals(emailAddress));
+            User user = DataModel.Instance.Users.FirstOrDefault(x => x.Id.Equals(userId));
             if (user == null)
                 return NotFound();
             try
             {
                 if (user.CalculateBalance() != 0.0)
                 {
-                    return BadRequest(user.DisplayName + " kann nicht entfernt werden, da der Kontostand "+ user.Balance.ToString("F2") + " € ist. Gleicht das mal erstmal aus ..");
+                    return BadRequest(user.Name + " kann nicht entfernt werden, da der Kontostand "+ user.Balance.ToString("F2") + " € ist. Gleicht das mal erstmal aus ..");
                 }
                 DataModel.Instance.Users.Remove(user);
 
